@@ -4,7 +4,7 @@ import requests, os, re
 
 
 class ids:
-    __flagsTCP = {
+    _flagsTCP = {
         'F': 'FIN',
         'S': 'SYN',
         'R': 'RST',
@@ -17,7 +17,7 @@ class ids:
 
     ip_cnt_TCP = {}               
 
-    __THRESH=1000               
+    _THRESH=1000               
     # while True:
       #  try:
        #     requests.get('https://duckduckgo.com/').status_code
@@ -38,7 +38,7 @@ class ids:
             src_port=packet.sport
             dst_port=packet.dport
             print(", Port: %s --> %s, "%(src_port,dst_port))
-            print([type(self).__flagsTCP[x] for x in packet.sprintf('%TCP.flags%')])
+            print([type(self)._flagsTCP[x] for x in packet.sprintf('%TCP.flags%')])
             self.detect_TCPflood(packet)
         else:
             print()
@@ -57,15 +57,15 @@ class ids:
 
             for stream in type(self).ip_cnt_TCP:
                 pckts_sent = type(self).ip_cnt_TCP[stream]
-                if pckts_sent > type(self).__THRESH:
+                if pckts_sent > type(self)._THRESH:
                     src = stream.split(':')[0]
                     dst = stream.split(':')[1]
-                    print("Excessive packets from: %s --> %s, This has been logged in /Documents/IDSlogs." %(src,dst))
+                    print("Excessive packets from: %s --> %s, This has been logged in /var/log/ids_log." %(src,dst))
 
 
 def main():
-    user_input = input("please make sure your running this as root!")
+    user_input = input("please ensure this is run with root privilege!")
     os.system('apt install net-tools -y')
     os.system('ifconfig | grep "flags"')
-    adapter = input("what adapter are you using (example: wlan0) : ")
+    adapter = input("which adapter are you using? (example: wlan0) : ")
     sniff(filter="ip",iface=adapter,prn=ids().sniffPackets)
